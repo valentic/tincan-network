@@ -1,0 +1,36 @@
+#!/bin/bash
+
+##########################################################################
+#
+#   Start Flask-based commands
+#
+#   For supervisord, you need to be running a recent 
+#   version (3.0+) and include the following in the config:
+#
+#       stopasgroup=true
+#
+#   See:
+#       https://stackoverflow.com/questions/9090683/supervisord-stopping-child-processes
+#
+#   2017-10-04  Todd Valentic
+#               Initial implementation.
+#
+#   2018-01-19  Todd Valentic
+#               Generalized to launch multiple commands
+#
+#   2019-01-29  Todd Valentic
+#               Retooled to use flask CLI
+#
+#   2022-01-28  Todd Valentic
+#               launch -> server-launch
+#
+##########################################################################
+
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $BASEDIR
+
+. $BASEDIR/venv/bin/activate
+
+exec server-launch $*
+

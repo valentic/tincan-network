@@ -1,0 +1,6 @@
+export * from './home'
+//export * from './about'
+export * from './auth'
+//export * from './contacts'
+export * from './dashboard'
+//export * from './resources'

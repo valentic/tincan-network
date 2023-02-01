@@ -1,0 +1,11 @@
+Welcome to the InGeO Community
+
+Your account is ready to use. You can login at:
+
+  https://ingeo.datatransport.org/home/sign-in
+
+If you have any questions, please email us at help@ingeo.datatransport.org
+
+Regards,
+The InGeO Team
+

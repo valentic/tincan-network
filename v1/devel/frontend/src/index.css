@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700');
+
+html {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: rgb(253, 253, 253);
+  color: #222;
+}
+
+a:active,
+a:focus,
+a:hover {
+  /* Improve readability of focused elements when they are also in an
+   * active/hover state. */
+  outline: 0;
+}
+
+#root {
+    height: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        'header'
+        'main'
+        'footer'
+}

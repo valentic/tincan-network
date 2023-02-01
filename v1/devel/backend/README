@@ -1,0 +1,184 @@
+====================================================================
+Flask Backend for Valentic Websites
+====================================================================
+
+2019-02-05  Todd Valentic
+            Initial version
+
+2019-06-17  Todd Valentic   
+            Notes about FLASK_ENV and development
+
+2019-12-03  Todd Valentic
+            Added notes about create databases
+
+2022-03-20  Todd Valentic
+            Add user creation
+            Add deployment notes
+
+2022-05-28  Todd Valentic
+            Use -devel and -prod on database names
+
+2022-06-16  Todd Valentic
+            Update backend README database instructions
+
+To build wheel:
+
+    make wheel
+
+To install package for development:
+
+    make setup
+
+To reinstall package for development:
+
+    make update
+
+To install package for production:
+
+    - build the frontend (yarn build)
+    - make wheel
+
+    - virutalenv venv
+    - source venv/bin/activate
+    - pip install -U pip
+    - pip install <package>.whl
+
+To run the frontend during development:
+    
+    (in frontend directory)
+
+    PORT=xxxx yarn start
+
+To build the frontend for the wheel
+
+    (in frontend directory)
+
+    yarn build
+
+For frontend proxy routes:
+        
+    For each path, we need an entry in setupProxy.js
+    Use env (which is a symlink to .env) for constants with the actual
+        URL. Use those environment variables in the code to prevent 
+        having to repeat the actual URL.
+
+Code organization:
+
+    Makefile        - create/update development environment
+    setup.py        - Python package description
+    MANIFEST.in     - Where to find files
+    README          - Notes 
+
+    server/
+        __init__.py - Application
+        config.py   - Configuration
+        model.py    - Database tables
+        commands.py - Command line interface
+        static/     - Link to frontend static files (js and css)
+        templates/  - Link to frontend template files (html)
+
+    server/routes/
+        main.py     - Main routes (index, webworkers)
+        api.py      - API routes
+        auth.py     - Authentication routes
+
+    server/migrations/
+        Database migration files. Create with 'server db init'
+
+Authentication:
+
+    Follow:
+        
+        https://flask-jwt-extended.readthedocs.io/en/latest/basic_usage.html 
+        http://blog.tecladocode.com/jwt-authentication-and-token-refreshing-in-rest-apis/
+
+    Test with CURL (make sure use the port # the app is running on)
+
+    Tip: to copy in Tmux
+        ^A [
+        space (start highlighting)
+        enter (end highlighting)
+        ^A ] (paste)
+
+Database
+
+    We keep the users in a separate database ('<project>_users') and
+        use SQLAlchemy bind to access other databases
+
+    Use flask-migration to manage the database versions.  
+        https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
+        
+        - Create the databases
+
+            Assume PROJECT is set to NAME.VERSION (i.e.  conus.v1) 
+
+            createdb -O tranposrt $PROJECT-prod
+            createdb -O tranposrt $PROJECT-users-prod
+
+            createdb -O tranposrt $PROJECT-devel
+            createdb -O tranposrt $PROJECT-users-devel
+
+        - Create database objects (tables) in model.py
+
+                devel/backenv/server/model.py
+
+        - Initialize the migration system
+
+            Activate the virtual environment
+                
+                . devel/backend/venv/bin/activate
+
+            Work in the backend src directory:
+
+                cd devel/backend/src/server
+            
+            FLASK_ENV=development server-cmd db init --multidb
+
+        - Create the first migration
+
+            FLASK_ENV=development server-cmd db migrate -m "initial"
+
+        - Upgrade the database (here's where the actual SQL is executed)
+
+            FLASK_ENV=developemnt server-cmd db upgrade
+
+        - Any tables that are reflected are ignored
+
+        - For the production database, the database changes will be applied when 
+            deployed using sitecmd, otherwise you will need to apply them with:
+            
+               FLASK_ENV=production server-cmd db upgrade
+
+        - Seed the database with any initial entries (need to run manually both on
+            development and production databases)
+
+            FLASK_ENV=development server-cmd seed
+            FLASK_ENV=development server-cmd seed
+
+        - Make sure tables are owned by the transport user:
+
+            psql <database> 
+
+            reassign owned by <user> to transport; 
+
+    If you are adding a nullable=false column:
+        https://medium.com/the-andela-way/alembic-how-to-add-a-non-nullable-field-to-a-populated-table-998554003134
+
+Notes on API design:
+
+    https://dev.to/solkimicreb/code-smart-not-hard-bb1
+
+Add users
+
+    (prefix with FLASK_ENV=development for development database)
+
+    server-cmd user add <username> <password> <email> [--admin]
+
+    server-cmd user mod <valentic> --active --not-pending
+
+Deployment to production
+
+    ./sitecmd build
+    ./sitecmd deploy
+
+

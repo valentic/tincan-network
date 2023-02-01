@@ -1,0 +1,677 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2474,
+      "max": [
+        2.2894086837768555,
+        2.2824697494506836,
+        0.7770230770111084
+      ],
+      "min": [
+        -2.2894086837768555,
+        -2.2824697494506836,
+        -1.7497074604034424
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 29688,
+      "componentType": 5126,
+      "count": 2474,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 2474,
+      "max": [
+        0.99742352962493896,
+        0.99438261985778809
+      ],
+      "min": [
+        0.002581477165222168,
+        0.0025806108023971319
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 5424,
+      "max": [
+        2473
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 59376,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        0.33138561248779297,
+        0.33815205097198486,
+        0.02108684740960598
+      ],
+      "min": [
+        -0.33138582110404968,
+        -0.3381519615650177,
+        -0.034007024019956589
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 60672,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 19792,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        0.99523580074310303,
+        0.41524726152420044
+      ],
+      "min": [
+        0.0028320304118096828,
+        0.0025801151059567928
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 21696,
+      "componentType": 5125,
+      "count": 204,
+      "max": [
+        107
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 61968,
+      "componentType": 5126,
+      "count": 110,
+      "max": [
+        0.33138582110404968,
+        0.33815205097198486,
+        0.02108684740960598
+      ],
+      "min": [
+        -0.33138561248779297,
+        -0.3381519615650177,
+        -0.034007024019956589
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 63288,
+      "componentType": 5126,
+      "count": 110,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 20656,
+      "componentType": 5126,
+      "count": 110,
+      "max": [
+        0.88569128513336182,
+        0.36668747663497925
+      ],
+      "min": [
+        0.048771407455205917,
+        0.0025830648373812437
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 22512,
+      "componentType": 5125,
+      "count": 204,
+      "max": [
+        109
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 64608,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        1.3624978065490723,
+        1.3903168439865112,
+        0.08669888973236084
+      ],
+      "min": [
+        -1.3624969720840454,
+        -1.3903172016143799,
+        -0.139820396900177
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 65904,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 21536,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        0.94493144750595093,
+        0.94292813539505005
+      ],
+      "min": [
+        0.0049544894136488438,
+        0.0025815658736974001
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 23328,
+      "componentType": 5125,
+      "count": 204,
+      "max": [
+        107
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 67200,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        1.3624969720840454,
+        1.3903168439865112,
+        0.08669888973236084
+      ],
+      "min": [
+        -1.3624978065490723,
+        -1.3903172016143799,
+        -0.139820396900177
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 68496,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 22400,
+      "componentType": 5126,
+      "count": 108,
+      "max": [
+        0.99413752555847168,
+        0.9423564076423645
+      ],
+      "min": [
+        0.0037986040115356445,
+        0.0030511706136167049
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 24144,
+      "componentType": 5125,
+      "count": 204,
+      "max": [
+        107
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "Batuhan13 (https://sketchfab.com/Batuhan13)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/drone-low-poly-1898e02633f94722b9ee91e0c208ad3c",
+      "title": "Drone Low Poly"
+    },
+    "generator": "Sketchfab-8.3.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 24960,
+      "byteOffset": 0,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 23264,
+      "byteOffset": 24960,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 69792,
+      "byteOffset": 48224,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 118016,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/LowPolyDrone_baseColor.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "name": "LowPolyDrone",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "MainBody_LowPolyDrone_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Wing1_LowPolyDrone_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Wing2_LowPolyDrone_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 9,
+            "POSITION": 8,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Wing3_LowPolyDrone_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 13,
+            "POSITION": 12,
+            "TEXCOORD_0": 14
+          },
+          "indices": 15,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Wing4_LowPolyDrone_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 17,
+            "POSITION": 16,
+            "TEXCOORD_0": 18
+          },
+          "indices": 19,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "name": "RootNode (gltf orientation matrix)",
+      "rotation": [
+        -0.70710678118654746,
+        -0,
+        -0,
+        0.70710678118654757
+      ]
+    },
+    {
+      "children": [
+        2
+      ],
+      "name": "RootNode (model correction matrix)"
+    },
+    {
+      "children": [
+        3
+      ],
+      "matrix": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "name": "DroneUvMapped.fbx"
+    },
+    {
+      "children": [
+        4,
+        6,
+        8,
+        10,
+        12
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        5
+      ],
+      "matrix": [
+        24.321933746337891,
+        0,
+        0,
+        0,
+        0,
+        -3.9625459700764806e-06,
+        -24.321933746337571,
+        0,
+        0,
+        24.321933746337571,
+        -3.9625459700764806e-06,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "name": "MainBody"
+    },
+    {
+      "mesh": 0,
+      "name": "MainBody_LowPolyDrone_0"
+    },
+    {
+      "children": [
+        7
+      ],
+      "matrix": [
+        100,
+        0,
+        0,
+        0,
+        0,
+        -1.6292067939183141e-05,
+        -99.999999999998678,
+        0,
+        0,
+        99.999999999998678,
+        -1.6292067939183141e-05,
+        0,
+        47.951652526855469,
+        20.279058456420898,
+        -47.669399261474609,
+        1
+      ],
+      "name": "Wing1"
+    },
+    {
+      "mesh": 1,
+      "name": "Wing1_LowPolyDrone_0"
+    },
+    {
+      "children": [
+        9
+      ],
+      "matrix": [
+        100,
+        0,
+        0,
+        0,
+        -0,
+        -1.6292067939183141e-05,
+        -99.999999999998678,
+        0,
+        0,
+        99.999999999998678,
+        -1.6292067939183141e-05,
+        0,
+        -47.951652526855469,
+        20.279058456420898,
+        -47.669399261474609,
+        1
+      ],
+      "name": "Wing2"
+    },
+    {
+      "mesh": 2,
+      "name": "Wing2_LowPolyDrone_0"
+    },
+    {
+      "children": [
+        11
+      ],
+      "matrix": [
+        24.321933746337891,
+        0,
+        0,
+        0,
+        -0,
+        -3.9625459700764806e-06,
+        -24.321933746337571,
+        0,
+        0,
+        24.321933746337571,
+        -3.9625459700764806e-06,
+        0,
+        -47.951652526855469,
+        20.279058456420898,
+        47.669399261474609,
+        1
+      ],
+      "name": "Wing3"
+    },
+    {
+      "mesh": 3,
+      "name": "Wing3_LowPolyDrone_0"
+    },
+    {
+      "children": [
+        13
+      ],
+      "matrix": [
+        24.321933746337891,
+        0,
+        0,
+        0,
+        0,
+        -3.9625459700764806e-06,
+        -24.321933746337571,
+        0,
+        0,
+        24.321933746337571,
+        -3.9625459700764806e-06,
+        0,
+        47.951652526855469,
+        20.279058456420898,
+        47.669399261474609,
+        1
+      ],
+      "name": "Wing4"
+    },
+    {
+      "mesh": 4,
+      "name": "Wing4_LowPolyDrone_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "OSG_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ]
+}
+

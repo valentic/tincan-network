@@ -1,0 +1,11 @@
+InGeO Account Created
+
+A new account has been created by:
+
+  Username   : {{user.username}}
+  First name : {{user.firstname}}
+  Last name  : {{user.lastname}}
+  Affiliation: {{user.affiliation}}
+  Email addr : {{user.email}}
+  Created on : {{user.created_on}}
+

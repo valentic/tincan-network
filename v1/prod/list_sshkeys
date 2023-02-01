@@ -1,0 +1,22 @@
+#!/bin/bash
+
+##########################################################
+#
+#   Update authorized_keys for a given Tincan network 
+#
+#   2021-05-27  Todd Valentic
+#               Initial implementation.
+#
+#   2023-01-11  Todd Valentic
+#               server -> server-cmd
+#
+##########################################################
+
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $BASEDIR
+
+. $BASEDIR/venv/bin/activate
+
+exec server-cmd mesh list-sshkeys $*
+

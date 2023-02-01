@@ -1,0 +1,9 @@
+InGeO Account Username Lookup
+
+Your account username is: {{user.username}}
+
+If you have any questions, please email us at help@ingeo.datatransport.org
+
+Regards,
+The InGeO Team
+

@@ -1,0 +1,6 @@
+include CHANGES LICENSE Makefile launcher
+graft src/server/static
+graft src/server/templates
+graft src/server/routes
+graft src/server/migrations
+global-exclude *.pyc

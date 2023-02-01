@@ -1,0 +1,19 @@
+
+module local 1.0;
+
+require {
+	type postgresql_t;
+	type ldconfig_exec_t;
+	type sshd_t;
+	class file { execute execute_no_trans map open read };
+	class unix_stream_socket connectto;
+}
+
+#============= sshd_t ==============
+
+#!!!! This avc can be allowed using the boolean 'domain_can_mmap_files'
+allow sshd_t ldconfig_exec_t:file map;
+allow sshd_t ldconfig_exec_t:file { execute execute_no_trans open read };
+
+#!!!! This avc can be allowed using the boolean 'daemons_enable_cluster_mode'
+allow sshd_t postgresql_t:unix_stream_socket connectto;

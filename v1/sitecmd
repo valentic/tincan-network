@@ -1,0 +1,327 @@
+#!/usr/bin/env bash
+
+##########################################################################
+#
+#   Application manager 
+#
+#   2022-02-07  Todd Valentic
+#               Initial implementation
+#
+#   2022-03-20  Todd Valentic
+#               Apply database upgrades on deployment
+#
+#   2022-05-25  Todd Valentic
+#               Ignore egg and instance directories on packup
+#               Include top level files 
+#               Version 1.0.2
+#
+#   2022-05-27  Todd Valentic
+#               Rework config to use key=value pairs
+#               Release 1.1.0
+#
+#   2022-05-31  Todd Valentic
+#               Add branch config parameter
+#               Release 1.1.1
+#
+#   2022-11-14  Todd Valentic
+#               Fix replacement of release (version) in package.json
+#               Release 1.1.2
+#
+#   2023-02-01  Todd Valentic
+#               Improve exclude parameters in packup
+#               Release 1.1.3
+#
+##########################################################################
+
+set -o errexit   # abort on nonzero exitstatus
+set -o nounset   # abort on unbound variable
+set -o pipefail  # do not hide errors within pipes
+
+VERSION=1.1.3
+
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+FRONTEND_DIR=${BASEDIR}/devel/frontend
+BACKEND_DIR=${BASEDIR}/devel/backend
+PROD_DIR=${BASEDIR}/prod
+
+#-------------------------------------------------------------------------
+# Usage function
+#-------------------------------------------------------------------------
+
+function usage()
+{
+   cat << HEREDOC
+
+   Usage: $progname [options] cmd
+
+   Optional arguments:
+     -h, --help           show this help message and exit
+     -V, --version        $progname version 
+     -v, --verbose        increase the verbosity (can be applied multiple times)
+     -b, --backend        only apply to backend
+     -f, --frontend       only apply to frontend
+     -p, --production     only apply to production
+
+   Where cmd is one of the following:
+
+     setup                Setup application (backend/frontend/all)
+     cleanup              Remove files created in setup or build 
+     packup               Create a source file archive
+     build                Build the application 
+     config               Set configuration values
+     deploy               Deploy application to production
+     restart              Restart production server (supervisorctl)
+
+  Config options (key=value pairs):
+
+     release              Release version (i.e., 1.0.3)
+     siteroot             Hosted URL path (i.e., /v3)
+     project              Project name (i.e. data_viewer)
+     branch               Project branch (i.e. v1)
+     port                 Development server port (i.e. 9000) 
+
+HEREDOC
+}  
+
+#-------------------------------------------------------------------------
+# Initialize variables
+#-------------------------------------------------------------------------
+
+progname=$(basename $0)
+verbose=0
+dryrun=0
+backend=1
+frontend=1
+production=1
+cmd=
+
+#-------------------------------------------------------------------------
+# Parse command line 
+#-------------------------------------------------------------------------
+
+OPTS=$(getopt -o "hVvbfp" --long "help,version,verbose,backend,frontend,production" -n "$progname" -- "$@")
+if [ $? != 0 ] ; then echo "Error in command line arguments." >&2 ; usage; exit 1 ; fi
+eval set -- "$OPTS"
+
+while true; do
+  # uncomment the next line to see how shift is working
+  #echo "\$1:\"$1\" \$2:\"$2\""
+  case "$1" in
+    -h | --help )       usage; exit; ;;
+    -V | --version )    echo $VERSION; exit ;;
+    -v | --verbose )    verbose=$((verbose + 1)); shift ;;
+    -b | --backend )    backend=1; frontend=0; production=0; shift ;;
+    -f | --frontend )   backend=0; frontend=1; production=0; shift ;;
+    -p | --production ) backend=0; frontend=0; production=1; shift ;;
+    -- )                shift; break ;;
+    * )                 break ;;
+  esac
+done
+
+if [ $# -eq 0 ]; then
+    usage
+    exit 1
+fi
+
+cmd=$1
+
+if (( $verbose > 0 )); then
+
+   # print out all the parameters we read in
+   cat <<EOM
+   verbose=$verbose
+   dryrun=$dryrun
+   backend=$backend
+   frontend=$frontend
+   cmd=$cmd 
+   parameters=$* 
+EOM
+fi
+
+#=========================================================================
+# Main application 
+#=========================================================================
+
+component_handler () {
+    
+    local cmd=$1
+    local workdir=$2
+
+    make -C ${workdir} ${cmd} 
+}
+
+cmd_handler () {
+
+    local cmd=$1
+
+    [[ $frontend -eq 1 ]]   && component_handler ${cmd} ${FRONTEND_DIR}
+    [[ $backend  -eq 1 ]]   && component_handler ${cmd} ${BACKEND_DIR} 
+    [[ $production -eq 1 ]] && component_handler ${cmd} ${PROD_DIR} 
+
+}
+
+packup_handler () {
+
+    local timestamp=$(date +"%Y%m%d-%H%M%S") 
+    local project_dir=$(dirname "${BASEDIR}")
+    local archive_dir=${project_dir}/archive
+    local branch=$(basename "${BASEDIR}")
+    local project=$(basename "${project_dir}")
+    local tarfile=${project}_${branch}_${timestamp}.tgz
+
+    if [ ! -d ${archive_dir} ]; then
+        mkdir -p ${archive_dir}
+    fi
+
+    echo "Backing up ${branch} -> ${tarfile}"
+
+    tar zcf ${archive_dir}/${tarfile} \
+        -C $(realpath ${BASEDIR}/..) \
+        --exclude '*/node_modules' \
+        --exclude '*/dist' \
+        --exclude '*/build' \
+        --exclude '*/venv' \
+        --exclude '*.tgz' \
+        --exclude '*/*.egg-info' \
+        --exclude '*/instance' \
+        --exclude '*/__pycache__' \
+        --exclude '.eslintcache' \
+        --exclude '*.bak' \
+        LICENSE README.md \
+        ${branch}
+}
+
+config_siteroot () {
+
+    local siteroot=$1
+
+    echo "Setting siteroot to ${siteroot} (check supervisor and nginx config)"
+
+    sed -i.bak "s|\(\"homepage\":\) *\([^ ]*\)|\1 \"${siteroot}\",|" $FRONTEND_DIR/package.json
+    sed -i.bak "s|\(REACT_APP_ROOT_URL=\)\([^ ]*\)|\1${siteroot}|" $FRONTEND_DIR/.env
+}
+
+config_release () {
+
+    local release=$1
+
+    echo "Setting release to ${release}"
+
+    sed -i.bak "s|\(version=\)\([^ ]*\)|\1'${release}'|" $BACKEND_DIR/src/server/metadata.py
+    sed -i.bak "s|\(\"version\":\) *\([^ ]*\)|\1 \"${release}\",|" $FRONTEND_DIR/package.json
+    sed -i.bak "s|\(REACT_APP_RELEASE=\)\([^ ]*\)|\1'${release}'|" $FRONTEND_DIR/.env
+}
+
+config_project () {
+
+    local project=$1
+
+    echo "Setting project to ${project}"
+
+    sed -i.bak "s|\(project=\)\([^ ]*\)|\1'${project}'|" $BACKEND_DIR/src/server/metadata.py
+    sed -i.bak "s|\("name":\) *\([^ ]*\)|\1 '${project}',|" $FRONTEND_DIR/package.json
+    sed -i.bak "s|\(REACT_APP_PROJECT=\)\([^ ]*\)|\1'${project}'|" $FRONTEND_DIR/.env
+}
+
+config_port () {
+
+    local port=$1
+
+    echo "Setting development API port to ${port}"
+
+    sed -i.bak "s|\(REACT_APP_API_PORT=\)\([^ ]*\)|\1'${port}'|" $FRONTEND_DIR/.env
+}
+
+config_branch () {
+
+    local branch=$1
+
+    echo "Setting branch to ${branch}"
+
+    sed -i.bak "s|\(branch=\)\([^ ]*\)|\1'${branch}'|" $BACKEND_DIR/src/server/metadata.py
+}
+
+
+
+
+config_handler () {
+
+    # Skip command ("config")
+    shift
+
+    # Process key=value pairs 
+
+    while [ $# -gt 0 ]; do
+
+      local key=${1%%=*}
+      local value=${1##*=}
+      shift
+
+      case "$key" in
+        siteroot )  config_siteroot ${value}; ;;
+        release )   config_release ${value}; ;;
+        project )   config_project ${value}; ;;
+        port )      config_port ${value}; ;; 
+        branch )    config_branch ${value}; ;;
+        * )         echo "Unknown config option: $key"; ;; 
+      esac
+    done
+
+    exit
+}
+
+deploy_handler() {
+
+    (
+        cd ${PROD_DIR}
+        [[ ! -d venv ]] && python3 -m venv venv 
+
+        . venv/bin/activate
+        pip install -U pip
+
+        local wheel=$(find ${BACKEND_DIR} -name "*.whl" -type f -print0 | xargs -r -0 ls -1 -t | head -1)
+        local reqs=$(find ${BACKEND_DIR} -name "requirements.txt" -type f -print0 | xargs -r -0 ls -1 -t | head -1)
+
+        echo "Installing requirements"
+
+        pip install -r ${reqs}
+
+        echo "Installing $wheel"
+
+        pip install --upgrade --no-deps --force-reinstall ${wheel}
+
+        echo "Applying database upgrades"
+
+        local sitepackages=$(python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))")
+
+        FLASK_ENV=production server-cmd db upgrade -d ${sitepackages}/server/migrations
+    )
+}
+
+restart_handler () {
+
+    local PROJECTVER=${BASEDIR#/*/*/}
+    local PROJECTVER=${PROJECTVER/\//.}
+
+    echo "Restarting ${PROJECTVER}"
+
+    sudo supervisorctl restart $PROJECTVER-prod
+}
+
+case "$cmd" in
+    
+    setup)      cmd_handler setup ;;
+    cleanup)    cmd_handler cleanup ;;
+    build)      cmd_handler build ;;
+    packup)     packup_handler ;;
+    config)     config_handler "$@";;
+    deploy)     deploy_handler ;;
+    restart)    restart_handler ;;
+
+    *)
+        usage 
+        exit 1
+        ;;
+esac
+
+exit 0
