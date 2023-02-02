@@ -6,6 +6,10 @@
 #   2019-07-03  Todd Valentic
 #               Initial implementation
 #
+#   2023-02-02  Todd Valentic
+#               Use metadata for version, project, and branch
+#               Add branch to datbase name
+#
 ###################################################################
 
 import os
@@ -15,12 +19,12 @@ import datetime
 
 from . import metadata
 
-PROJECT='tincan'
-
 class Config(object):
 
     HOST = socket.gethostname()
     VERSION = metadata.version
+    PROJECT = metadata.project
+    BRANCH = metadata.branch
 
     # Mail configuration
 
@@ -47,19 +51,20 @@ class Config(object):
 class Production(Config):
 
     DEBUG = False
+    PREFIX = f'{Config.SQLALCHEMY_URI}/{Config.PROJECT}/{Config.BRANCH}'
 
-    SQLALCHEMY_DATABASE_URI = f'{Config.SQLALCHEMY_URI}/{PROJECT}'
+    SQLALCHEMY_DATABASE_URI = f'{PREFIX}-prod'
     SQLALCHEMY_BINDS = {
-        'users':    f'{Config.SQLALCHEMY_URI}/{PROJECT}-users'
+        'users':    f'{PREFIX}-users-prod'
     }
 
 class Development(Config):
 
     DEBUG = True
+    PREFIX = f'{Config.SQLALCHEMY_URI}/{Config.PROJECT}/{Config.BRANCH}'
 
-    SQLALCHEMY_DATABASE_URI = f'{Config.SQLALCHEMY_URI}/{PROJECT}-devel'
+    SQLALCHEMY_DATABASE_URI = f'{PREFIX}-devel'
     SQLALCHEMY_BINDS = {
-        'users':    f'{Config.SQLALCHEMY_URI}/{PROJECT}-users-devel'
+        'users':    f'{PREFIX}-users-devel'
     }
-
 
