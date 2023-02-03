@@ -72,7 +72,7 @@ def list_groups():
 @bp.cli.command('list-nodes')
 def list_nodes():
 
-    fmt = '%05s %-10s %-10s %-20s %s'
+    fmt = '%05s %-10s %-15s %-20s %s'
     timefmt = '%Y-%m-%d %H:%M:%S'
 
     click.echo()
@@ -639,10 +639,10 @@ class Group(Resource):
 
 class NodeList(Resource):
 
-    parser = reqparse.RequestParser()
-    parser.add_argument('uuid',type=str,required=True)
-    parser.add_argument('sshkey',type=str,required=True)
-    parser.add_argument('group',type=str,required=True)
+    #parser = reqparse.RequestParser()
+    #parser.add_argument('uuid',type=str,required=True)
+    #parser.add_argument('sshkey',type=str,required=True)
+    #parser.add_argument('group',type=str,required=True)
 
     # List nodes
 
@@ -654,9 +654,21 @@ class NodeList(Resource):
 
     @apikey_required
     def post(self):
-        args = self.parser.parse_args()
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('uuid',required=True)
+        parser.add_argument('sshkey',required=True)
+        parser.add_argument('group',required=True)
+
+        try:
+            args = parser.parse_args()
+        except Exception as e: 
+            current_app.logger.info('exception')
+            current_app.logger.info(str(e))
+            raise
 
         group = lookup_group(args['group'])
+
         data = model.filter_columns(model.MeshNode,args)
 
         node = cli_lookup_node(args['uuid'])
@@ -666,7 +678,7 @@ class NodeList(Resource):
                 data['updated_on'] = datetime.datetime.utcnow()
                 model.update(node,data)
             else:
-                abort(409,message='A node with that name is already registered')
+                abort(409, message='A node with that name is already registered')
         else:
             if data.get('name'):
                 data['name'] = normalize_name(name)
