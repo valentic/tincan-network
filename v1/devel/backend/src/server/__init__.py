@@ -10,6 +10,7 @@ from flask_flatpages import FlatPages
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask.json import JSONEncoder
 from docutils.core import publish_parts
+from flask.wrappers import Request
 
 import os
 import uuid
@@ -61,6 +62,16 @@ def rst_renderer(text):
     parts = publish_parts(source=text, writer_name='html')
     return parts['html_body']
 
+# Fix for bug: werkzeug now raises error if data not in json
+# but flask-restful defaults to trying json first
+# https://github.com/pallets/flask/issues/4552
+
+class AnyJsonRequest(Request):
+
+    def on_json_loading_failed(self, e):
+        if e is not None:
+            return super().on_json_loading_failed(e)
+
 #-- Application------------------------------------------------------
 
 def create_app(mode=None,root=None):
@@ -77,6 +88,8 @@ def create_app(mode=None,root=None):
     app.config.from_object('server.config.%s' % mode.capitalize())
     app.wsgi_app = ReverseProxy(app)
     app.json_encoder = Encoder
+
+    app.request_class = AnyJsonRequest
 
     logging.info('ROOT=%s' % root)
     logging.info('MODE=%s' % mode)
