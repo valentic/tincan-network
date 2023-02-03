@@ -28,7 +28,7 @@ dependencies = [
     "bcrypt",
     "flask",
     "psycopg2-binary",
-    "sqlalchemy",
+    "sqlalchemy~=1.4",
     "Flask-SQLAlchemy",
     "flask-compress",
     "flask-script",
@@ -56,7 +56,8 @@ test = [
 devel = [
     "build",
     "pylint",
-    "black"
+    "black",
+    "pip-tools"
     ]
 
 [project.urls]
