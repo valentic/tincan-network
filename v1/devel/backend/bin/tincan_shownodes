@@ -1,0 +1,50 @@
+#!/bin/bash
+
+#########################################################################@
+#
+#   Show tincan network SSH tunnel connections
+#
+#   Uses the tincan SQL database for group/node information.
+#
+#   2021-06-20  Todd Valentic
+#                   Based on hardcoded showtunnels script.
+#                   Adapt to use SQL backend
+#
+#   2023-02-03  Todd Valentic
+#               Include branch and prod in database name
+#
+#########################################################################@
+
+sql='
+select to_json(data) from (
+    select 
+        g.name as group, 
+        n.name as node, 
+        g.ssh_user as user, 
+	n.active as active,
+	n.pending as pending,
+	n.checked_on as checked_on
+    from 
+        mesh_node as n 
+    join 
+        mesh_group as g on n.group_id=g.id 
+) as data
+'
+
+database=tincan.v1-prod
+
+sql_output=$(psql -t -d $database -c "$sql")
+
+echo
+echo   '---------------------------------------------------------------------'
+printf '%-5s %-15s %-15s %s\n' Port User Group Node
+echo   '---------------------------------------------------------------------'
+
+while IFS="=" read -r group node user active pending checked_on; do
+
+	echo $node
+
+done < <(echo $sql_output |\
+    jq -r '.group + "=" + .node + "=" + .user + "=" + (.pending|tostring) + "=" + (.active|tostring) + "=" + .checked_on')
+
+echo

@@ -1,0 +1,76 @@
+#!/bin/bash
+
+#########################################################################@
+#
+#   Show tincan network SSH tunnel connections
+#
+#   Uses the tincan SQL database for group/node information.
+#
+#   2021-06-20  Todd Valentic
+#                   Based on hardcoded showtunnels script.
+#                   Adapt to use SQL backenf
+#
+#   2023-02-03  Todd Valentic
+#               Include branch and prod in database name
+#
+#########################################################################@
+
+sql='
+select to_json(data) from (
+    select 
+        g.name as group, 
+        n.name as node, 
+        g.ssh_user as user, 
+        n.ssh_port as port, 
+        n.ssh_port_alt as alt  
+    from 
+        mesh_node as n 
+    join 
+        mesh_group as g on n.group_id=g.id 
+    where 
+        n.active=true
+) as data
+'
+database=tincan.v1-prod
+
+sql_output=$(psql -t -d $database -c "$sql")
+
+declare -A portmap
+declare -A groupmap
+declare -A users
+
+while IFS="=" read -r group node user port alt; do
+		
+    portmap["$port $user"]="$node (primary)"
+    portmap["$alt $user"]="$node (backup)"
+
+    groupmap["$port $user"]="$group"
+    groupmap["$alt $user"]="$group"
+    users[$user]=1
+
+done < <(echo $sql_output |\
+    jq -r '.group + "=" + .node + "=" + .user + "=" + (.port|tostring) + "=" + (.alt|tostring)')
+
+printf -v USERS '%s|' "${!users[@]}"
+USERS=${USERS%|}
+
+echo
+echo   '---------------------------------------------------------------------'
+printf '%-5s %-15s %-15s %s\n' Port User Group Node
+echo   '---------------------------------------------------------------------'
+
+netstat -l -A ip --numeric-ports -e |
+    egrep $USERS |
+    egrep LISTEN |
+    sed s/localhost.localdomain://  |
+    sed s/localhost://  |
+    sed s/0.0.0.0://  |
+    awk '{ print $4,$7 }'      |
+    sort -g |
+while read tunnel; do
+   printf '%-5s %-15s ' $tunnel
+   printf '%-15s ' "${groupmap[$tunnel]}" 
+   printf '%s\n' "${portmap[$tunnel]}"
+done
+
+echo

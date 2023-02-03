@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/opt/websites/tincan-network/v1/prod/list_sshkeys $*

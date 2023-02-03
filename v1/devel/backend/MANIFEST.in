@@ -3,4 +3,5 @@ graft src/server/static
 graft src/server/templates
 graft src/server/routes
 graft src/server/migrations
+graft bin
 global-exclude *.pyc
