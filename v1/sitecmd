@@ -31,13 +31,17 @@
 #               Improve exclude parameters in packup
 #               Release 1.1.3
 #
+#   2023-02-07  Todd Valentic
+#               Use FLASK_MODE in place of FLASK_ENV
+#               Releae 1.1.4
+#
 ##########################################################################
 
 set -o errexit   # abort on nonzero exitstatus
 set -o nounset   # abort on unbound variable
 set -o pipefail  # do not hide errors within pipes
 
-VERSION=1.1.3
+VERSION=1.1.4
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 FRONTEND_DIR=${BASEDIR}/devel/frontend
@@ -294,7 +298,7 @@ deploy_handler() {
 
         local sitepackages=$(python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))")
 
-        FLASK_ENV=production server-cmd db upgrade -d ${sitepackages}/server/migrations
+        FLASK_MODE=production server-cmd db upgrade -d ${sitepackages}/server/migrations
     )
 }
 
