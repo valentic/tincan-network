@@ -21,6 +21,9 @@ Flask Backend for Valentic Websites
 2022-06-16  Todd Valentic
             Update backend README database instructions
 
+2023-02-06  Todd Valentic
+            Use FLASK_MODE instead of FLASK_ENV (which is deprecated)
+
 To build wheel:
 
     make wheel
@@ -132,28 +135,28 @@ Database
 
                 cd devel/backend/src/server
             
-            FLASK_ENV=development server-cmd db init --multidb
+            FLASK_MODE=development server-cmd db init --multidb
 
         - Create the first migration
 
-            FLASK_ENV=development server-cmd db migrate -m "initial"
+            FLASK_MODE=development server-cmd db migrate -m "initial"
 
         - Upgrade the database (here's where the actual SQL is executed)
 
-            FLASK_ENV=developemnt server-cmd db upgrade
+            FLASK_MODE=developemnt server-cmd db upgrade
 
         - Any tables that are reflected are ignored
 
         - For the production database, the database changes will be applied when 
             deployed using sitecmd, otherwise you will need to apply them with:
             
-               FLASK_ENV=production server-cmd db upgrade
+               FLASK_MODE=production server-cmd db upgrade
 
         - Seed the database with any initial entries (need to run manually both on
             development and production databases)
 
-            FLASK_ENV=development server-cmd seed
-            FLASK_ENV=development server-cmd seed
+            FLASK_MODE=development server-cmd seed
+            FLASK_MODE=production server-cmd seed
 
         - Make sure tables are owned by the transport user:
 
@@ -170,7 +173,7 @@ Notes on API design:
 
 Add users
 
-    (prefix with FLASK_ENV=development for development database)
+    (prefix with FLASK_MODE=development for development database)
 
     server-cmd user add <username> <password> <email> [--admin]
 
