@@ -79,20 +79,25 @@ def create_app(mode=None,root=None):
     # Create and configure the app
 
     if not mode:
-        mode = os.getenv('FLASK_ENV','production')
+        #mode = os.getenv('FLASK_ENV','production')
+        mode = os.getenv('FLASK_MODE','production')
+
+    if not 'FLASK_DEBUG' in os.environ:
+        os.environ['FLASK_DEBUG'] = 'false' if mode == 'production' else 'true' 
 
     if not root:
         root = os.getenv('FLASK_ROOT','/')
 
     app = Flask(__name__,instance_relative_config=True)
+
     app.config.from_object('server.config.%s' % mode.capitalize())
     app.wsgi_app = ReverseProxy(app)
     app.json_encoder = Encoder
-
     app.request_class = AnyJsonRequest
 
     logging.info('ROOT=%s' % root)
     logging.info('MODE=%s' % mode)
+    logging.info('DEBUG=%s' % app.debug)
 
     # Ensure the instance folder exists
 

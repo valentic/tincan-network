@@ -50,7 +50,6 @@ class Config(object):
 
 class Production(Config):
 
-    DEBUG = False
     PREFIX = f'{Config.SQLALCHEMY_URI}/{Config.PROJECT}.{Config.BRANCH}'
 
     SQLALCHEMY_DATABASE_URI = f'{PREFIX}-prod'
@@ -60,7 +59,6 @@ class Production(Config):
 
 class Development(Config):
 
-    DEBUG = True
     PREFIX = f'{Config.SQLALCHEMY_URI}/{Config.PROJECT}.{Config.BRANCH}'
 
     SQLALCHEMY_DATABASE_URI = f'{PREFIX}-devel'
