@@ -2,8 +2,7 @@
 .PHONY: help cleanup build setup update 
 
 SHELL:=/bin/bash
-VIRTENV=venv
-PYTHON:=python3
+VIRTENV=.venv
 
 help:
 	@echo "Targets:"
@@ -21,21 +20,14 @@ cleanup:
 	rm src/server/templates
 
 build:	
-	. ${VIRTENV}/bin/activate; \
-	python -m build; \
-	pip freeze --exclude-editable > dist/requirements.txt
+	uv build
 
 setup:
-	${PYTHON} -m venv ${VIRTENV}; \
-	. ${VIRTENV}/bin/activate; \
-	pip install --upgrade pip; \
-	pip install wheel; \
-	pip install build; \
-	pip install -e . 
+	uv sync 
 	ln -sf ../../../frontend/build/static src/server/static
 	ln -sf ../../../frontend/build src/server/templates
 
 update:
-	pip install -e .		
+	uv sync 
 
 
