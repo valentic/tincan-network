@@ -3,15 +3,14 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-
 name = "tincan"
 dynamic = ["version"]
 description = "Tincan Network Management System"
-readme = "README.rst"
-requires-python= ">= 3.9"
+readme = "README"
+requires-python = ">=3.12"
 license = { file = "LICENSE" }
 authors = [
-    { name= 'Todd Valentic', email='todd.valentic@gmail.com' }
+    { name = "Todd Valentic", email="todd.valentic@gmail.com" }
 ]
 
 classifiers = [
@@ -21,29 +20,29 @@ classifiers = [
 ]
 
 dependencies = [
-    "pytz",
-    "dateutils",
-    "eventlet",
-    "requests",
-    "bcrypt",
-    "flask",
-    "psycopg2-binary",
+    "bcrypt>=4.2.1",
+    "dateutils>=0.6.12",
+    "eventlet>=0.38.2",
+    "flask-sqlalchemy>=3.0.5",
+    "flask>=3.1.0",
+    "psycopg2-binary>=2.9.10",
+    "pytz>=2024.2",
+    "requests>=2.32.3",
     "sqlalchemy~=1.4",
-    "Flask-SQLAlchemy",
-    "flask-compress",
-    "flask-script",
-    "flask-migrate",
-    "flask-bcrypt",
-    "flask-jwt-extended",
-    "flask-socketio",
-    "flask-restful",
-    "flask-mail",
-    "flask-flatpages",
-    "coverage",
-    "PyJWT",
-    "cryptography",
-    "itsdangerous",
-    "docutils"
+    "flask-compress>=1.17",
+    "flask-script>=2.0.6",
+    "flask-migrate>=4.0.7",
+    "flask-bcrypt>=1.0.1",
+    "flask-jwt-extended>=4.7.1",
+    "flask-socketio>=5.5.0",
+    "flask-restful>=0.3.10",
+    "flask-mail>=0.10.0",
+    "flask-flatpages>=0.8.3",
+    "coverage>=7.6.9",
+    "pyjwt>=2.10.1",
+    "cryptography>=44.0.0",
+    "itsdangerous>=2.2.0",
+    "docutils>=0.21.2",
 ]
 
 [project.optional-dependencies]
@@ -53,12 +52,10 @@ test = [
     "pyfakefs"
     ]
 
-devel = [
-    "build",
-    "pylint",
-    "black",
-    "pip-tools"
-    ]
+#devel = [
+#    "build",
+#    "pip-tools"
+#    ]
 
 [project.urls]
 
@@ -69,6 +66,13 @@ repository="https://github.com/valentic/tincan_network"
 
 server-cmd = "server.commands:cli"
 server-launch = "server.commands:launch"
+
+[tool.setuptools]
+script-files = [
+    "bin/tincan_keylookup",
+    "bin/tincan_shownodes",
+    "bin/tincan_showtunnels"
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
