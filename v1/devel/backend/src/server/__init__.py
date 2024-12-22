@@ -8,11 +8,12 @@ from flask_mail import Mail
 from flask_jwt_extended import JWTManager
 from flask_flatpages import FlatPages 
 from werkzeug.middleware.proxy_fix import ProxyFix
-from flask.json import JSONEncoder
+from itsdangerous import URLSafeTimedSerializer
 from docutils.core import publish_parts
 from flask.wrappers import Request
 
 import os
+import json
 import uuid
 import logging
 import decimal
@@ -49,7 +50,7 @@ class ReverseProxy(object):
 
         return self.app(environ,start_response)
 
-class Encoder(JSONEncoder):
+class Encoder(json.JSONEncoder):
     def default(self,o):
         if isinstance(o,decimal.Decimal):
             return float(o)
@@ -124,6 +125,8 @@ def create_app():
     jwt.init_app(app)
     pages.init_app(app)
     ProxyFix(app)
+
+    app.ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
     # import model here so reflected tables get built (needs the db engine)
     # https://stackoverflow.com/questions/36337416/reflecting-tables-with-flask-sqlalchemy-raises-runtimeerror-application-not-reg

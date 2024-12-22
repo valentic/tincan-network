@@ -15,9 +15,10 @@ cleanup:
 	find . -type f -name '*.log' -delete;
 
 build:	
-	yarn build	
+	npm run build	
 
 setup:
-	yarn install	
+	npm install	
+	ln -sf .env env
 
 
