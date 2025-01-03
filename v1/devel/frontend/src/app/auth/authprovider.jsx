@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { authService } from 'services'
+import { authService } from '~/services'
 import { LoadingOverlay } from '@mantine/core'
+import { PropTypes } from 'prop-types'
 
-const AuthContext = React.createContext(null)
-
-const useAuth = () => {
-    return React.useContext(AuthContext)
-}
+import { AuthContext } from './authcontext'
 
 const AuthProvider = ({ children }) => {
     
@@ -21,7 +18,7 @@ const AuthProvider = ({ children }) => {
             if (authService.hasToken()) {
                 await authService.getProfile().then(data => {
                     setProfile(data)
-                }).catch(e => {
+                }).catch(() => {
                     authService.logout()
                 })
             }
@@ -35,12 +32,10 @@ const AuthProvider = ({ children }) => {
 
     const login = async (payload) => {
         const data = await authService.login(payload)
-        console.log('auth provider, data',data)
         setProfile(data)
 
         if (data) {
             const origin = location.state?.from?.pathname || '/admin'
-            console.log('origin',origin)
             navigate(origin,{replace:true})
         } 
 
@@ -80,5 +75,9 @@ const AuthProvider = ({ children }) => {
     )
 }
 
-export { AuthContext, useAuth, AuthProvider }
+AuthProvider.propTypes = {
+    children: PropTypes.node.isRequired
+}
+
+export { AuthProvider }
 

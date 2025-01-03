@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASEURL = window.location.origin+process.env.REACT_APP_AUTH_URL
+const BASEURL = window.location.origin + import.meta.env.VITE_AUTH_URL
 const TOKEN = 'user'
 
 export const authService = {

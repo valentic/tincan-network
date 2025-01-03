@@ -1,7 +1,7 @@
-import { authService } from 'services'
+import { authService } from '~/services'
 import axios from 'axios'
 
-const BASEURL = window.location.origin+process.env.REACT_APP_ADMIN_URL
+const BASEURL = window.location.origin + import.meta.env.VITE_ADMIN_URL
 
 const axios_admin = axios.create({
     baseURL:    BASEURL,
