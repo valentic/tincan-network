@@ -21,6 +21,7 @@ cleanup:
 
 build:	
 	uv build
+	uv pip compile pyproject.toml -o dist/requirements.txt
 
 setup:
 	uv sync 

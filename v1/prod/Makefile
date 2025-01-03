@@ -2,7 +2,7 @@
 .PHONY: help cleanup build setup update 
 
 SHELL:=/bin/bash
-VIRTENV=venv
+VIRTENV=.venv
 PYTHON:=python3
 
 help:
@@ -14,8 +14,8 @@ help:
 cleanup:
 	rm -rf ${VIRTENV}
 
-setup:
-	${PYTHON} -m venv ${VIRTENV}; \
-	. ${VIRTENV}/bin/activate; \
-	pip install --upgrade pip;
+#setup:
+#	${PYTHON} -m venv ${VIRTENV}; \
+#	. ${VIRTENV}/bin/activate; \
+#	pip install --upgrade pip;
 

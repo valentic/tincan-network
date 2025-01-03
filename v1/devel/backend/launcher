@@ -24,14 +24,13 @@
 #   2022-01-28  Todd Valentic
 #               launch -> server-launch
 #
-#   2024-12-21  Todd Valentic
-#               Use uv to run
-#
 ##########################################################################
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $BASEDIR
 
-exec uv run server-launch $*
+. $BASEDIR/.venv/bin/activate
+
+exec server-launch $*
 

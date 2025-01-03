@@ -33,7 +33,25 @@
 #
 #   2023-02-07  Todd Valentic
 #               Use FLASK_MODE in place of FLASK_ENV
-#               Releae 1.1.4
+#               Release 1.1.4
+#
+#   2023-04-06  Todd Valentic
+#               Change REACT_APP -> VITE
+#               Release 1.1.5
+#
+#   2023-04-08  Todd Valentic
+#               Fix replacement for project name in project.json
+#               Run npm install to update project-lock.json if needed
+#               Release 1.1.6 
+#
+#   2024-01-17  Todd Valentic
+#               Source profile if found in same directory as sitecmd
+#               Use PYTHON value when setting up prod environment
+#               Release 1.1.7
+#
+#   2024-12-22  Todd Valentic
+#               Use uv
+#               Release 1.1.8
 #
 ##########################################################################
 
@@ -41,12 +59,19 @@ set -o errexit   # abort on nonzero exitstatus
 set -o nounset   # abort on unbound variable
 set -o pipefail  # do not hide errors within pipes
 
-VERSION=1.1.4
+VERSION=1.1.8
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 FRONTEND_DIR=${BASEDIR}/devel/frontend
 BACKEND_DIR=${BASEDIR}/devel/backend
 PROD_DIR=${BASEDIR}/prod
+
+if [ -f ${BASEDIR}/profile ]; then
+    . ${BASEDIR}/profile
+fi
+
+#PYTHON=${PYTHON:-python3}
+PYTHON=${PYTHON:-3.12}
 
 #-------------------------------------------------------------------------
 # Usage function
@@ -201,8 +226,7 @@ config_siteroot () {
 
     echo "Setting siteroot to ${siteroot} (check supervisor and nginx config)"
 
-    sed -i.bak "s|\(\"homepage\":\) *\([^ ]*\)|\1 \"${siteroot}\",|" $FRONTEND_DIR/package.json
-    sed -i.bak "s|\(REACT_APP_ROOT_URL=\)\([^ ]*\)|\1${siteroot}|" $FRONTEND_DIR/.env
+    sed -i "s|\(VITE_ROOT_URL=\)\([^ ]*\)|\1${siteroot}|" $FRONTEND_DIR/.env
 }
 
 config_release () {
@@ -211,9 +235,9 @@ config_release () {
 
     echo "Setting release to ${release}"
 
-    sed -i.bak "s|\(version=\)\([^ ]*\)|\1'${release}'|" $BACKEND_DIR/src/server/metadata.py
-    sed -i.bak "s|\(\"version\":\) *\([^ ]*\)|\1 \"${release}\",|" $FRONTEND_DIR/package.json
-    sed -i.bak "s|\(REACT_APP_RELEASE=\)\([^ ]*\)|\1'${release}'|" $FRONTEND_DIR/.env
+    sed -i "s|\(version=\)\([^ ]*\)|\1'${release}'|" $BACKEND_DIR/src/server/metadata.py
+    sed -i "s|\(\"version\":\) *\([^ ]*\)|\1 \"${release}\",|" $FRONTEND_DIR/package.json
+    sed -i "s|\(VITE_RELEASE=\)\([^ ]*\)|\1'${release}'|" $FRONTEND_DIR/.env
 }
 
 config_project () {
@@ -222,9 +246,9 @@ config_project () {
 
     echo "Setting project to ${project}"
 
-    sed -i.bak "s|\(project=\)\([^ ]*\)|\1'${project}'|" $BACKEND_DIR/src/server/metadata.py
-    sed -i.bak "s|\("name":\) *\([^ ]*\)|\1 '${project}',|" $FRONTEND_DIR/package.json
-    sed -i.bak "s|\(REACT_APP_PROJECT=\)\([^ ]*\)|\1'${project}'|" $FRONTEND_DIR/.env
+    sed -i "s|\(project=\)\([^ ]*\)|\1'${project}'|" $BACKEND_DIR/src/server/metadata.py
+    sed -i "s|\(\"name\":\) *\([^ ]*\)|\1 \"${project}\",|" $FRONTEND_DIR/package.json
+    sed -i "s|\(VITE_PROJECT=\)\([^ ]*\)|\1'${project}'|" $FRONTEND_DIR/.env
 }
 
 config_port () {
@@ -233,7 +257,7 @@ config_port () {
 
     echo "Setting development API port to ${port}"
 
-    sed -i.bak "s|\(REACT_APP_API_PORT=\)\([^ ]*\)|\1'${port}'|" $FRONTEND_DIR/.env
+    sed -i "s|\(VITE_API_PORT=\)\([^ ]*\)|\1'${port}'|" $FRONTEND_DIR/.env
 }
 
 config_branch () {
@@ -242,7 +266,7 @@ config_branch () {
 
     echo "Setting branch to ${branch}"
 
-    sed -i.bak "s|\(branch=\)\([^ ]*\)|\1'${branch}'|" $BACKEND_DIR/src/server/metadata.py
+    sed -i "s|\(branch=\)\([^ ]*\)|\1'${branch}'|" $BACKEND_DIR/src/server/metadata.py
 }
 
 
@@ -252,6 +276,8 @@ config_handler () {
 
     # Skip command ("config")
     shift
+
+    local rebuild=0
 
     # Process key=value pairs 
 
@@ -263,13 +289,19 @@ config_handler () {
 
       case "$key" in
         siteroot )  config_siteroot ${value}; ;;
-        release )   config_release ${value}; ;;
-        project )   config_project ${value}; ;;
+        release )   config_release ${value}; rebuild=1; ;;
+        project )   config_project ${value}; rebuild=1; ;;
         port )      config_port ${value}; ;; 
         branch )    config_branch ${value}; ;;
         * )         echo "Unknown config option: $key"; ;; 
       esac
     done
+
+    # Rebuild package-lock.json if needed
+
+    if [ "$rebuild" -eq 1 ]; then
+        ( cd $FRONTEND_DIR; npm install)
+    fi
 
     exit
 }
@@ -278,27 +310,24 @@ deploy_handler() {
 
     (
         cd ${PROD_DIR}
-        [[ ! -d venv ]] && python3 -m venv venv 
-
-        . venv/bin/activate
-        pip install -U pip
+        uv venv --python $PYTHON
 
         local wheel=$(find ${BACKEND_DIR} -name "*.whl" -type f -print0 | xargs -r -0 ls -1 -t | head -1)
         local reqs=$(find ${BACKEND_DIR} -name "requirements.txt" -type f -print0 | xargs -r -0 ls -1 -t | head -1)
 
         echo "Installing requirements"
 
-        pip install -r ${reqs}
+        uv pip install -r ${reqs}
 
         echo "Installing $wheel"
 
-        pip install --upgrade --no-deps --force-reinstall ${wheel}
+        uv pip install --upgrade --no-deps --force-reinstall ${wheel}
 
         echo "Applying database upgrades"
 
-        local sitepackages=$(python3 -c "import sysconfig; print(sysconfig.get_path('purelib'))")
+        local sitepackages=$(uv run python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
 
-        FLASK_MODE=production server-cmd db upgrade -d ${sitepackages}/server/migrations
+        FLASK_MODE=production uv run server-cmd db upgrade -d ${sitepackages}/server/migrations
     )
 }
 

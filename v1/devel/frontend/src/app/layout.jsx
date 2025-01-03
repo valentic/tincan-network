@@ -1,24 +1,44 @@
-import React from 'react'
 import { Outlet } from 'react-router-dom'
+import { Box } from '@mantine/core'
 
-import { 
-    AppShell
-} from '@mantine/core'
+import { useAuth } from '~/app'
 
-import { Logo } from './logo'
-import { Links } from './links'
-import { AppHeader } from './header'
-import { AppNavbar } from './navbar'
+import { Header } from './header'
+import { Footer } from './footer'
+import classes from './layout.module.css'
 
 const Layout = () => {
 
-    const header = <AppHeader logo={Logo} /> 
-    const navbar = <AppNavbar links={Links} />
+    const auth = useAuth()
 
+    /*
+    const submenu = [
+        { label: 'Home',        link: '/'           },
+        { label: 'Contacts',    link: '/contacts'   }
+    ]
+    */
+
+    let links = [
+        { label: 'Home',        link: '/'           },
+        { label: 'About Us',    link: '/about'      },
+        { label: 'Contact',     link: '/contact'    },
+    ]
+
+    if (auth.loggedIn()) {
+        links.push({link: '/admin',     label: 'Dashboard'  })
+        links.push({link: '/logout',    label: 'Sign out' })
+    }
+    
     return (
-        <AppShell padding="md" navbar={navbar} header={header}> 
-          <Outlet />
-        </AppShell>
+        <Box className={classes.page}> 
+          <Header links={links} /> 
+          <main className={classes.main}> 
+            <section className={classes.section} > 
+              <Outlet />
+            </section>
+          </main>
+          <Footer /> 
+        </Box>
     )
 }
 

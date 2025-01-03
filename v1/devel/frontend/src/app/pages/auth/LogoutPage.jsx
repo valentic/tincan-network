@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { useAuth } from 'app/auth'
+import { useAuth } from '~/app'
 
 const LogoutPage = () => {
     const auth = useAuth() 

@@ -1,35 +1,27 @@
-import React from 'react'
+import { Link } from 'react-router-dom'
+import { PropTypes } from 'prop-types'
+
 import { 
-    createStyles,
-    Text
+    Text,
 } from '@mantine/core'
 
-const useStyles = createStyles((theme) => {
-    
-    return {
-        footer: {
-            padding: '0.5em',
-            backgroundColor: '#f5f7fb', 
-            color: '#888',
-            textAlign: 'center',
-            fontSize: 'smaller',
-            borderTop: `1px solid ${theme.colors.gray[3]}`
-        }
-    }
-})
+import classes from './footer.module.css'
 
-const AppFooter = ({className, props}) => {
+const Footer = ({props}) => {
 
-    const release = process.env.REACT_APP_RELEASE
-    const { classes, cx } = useStyles()
+    const release = import.meta.env.VITE_RELEASE
 
     return (
-        <footer className={cx(classes.footer, className)} {...props}>
+        <footer className={classes.footer} {...props}>
           <Text size="xs" color="dimmer">
-            Release {release} 
+            Release {release} &nbsp; <Link to='/admin/'>Admin</Link>
           </Text>
         </footer>
     )
 }
 
-export { AppFooter }
+Footer.propTypes = {
+    props: PropTypes.any
+}
+
+export { Footer }

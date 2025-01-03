@@ -1,10 +1,10 @@
-import React from 'react'
-
 import { 
     Container, 
     Text,
     Title,
 } from '@mantine/core'
+
+//import classes from './home.module.css'
 
 const Home = () => {
 

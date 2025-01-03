@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASEURL = window.location.origin+process.env.VITE_API_URL
+const BASEURL = window.location.origin + import.meta.env.VITE_API_URL
 
 const axios_api = axios.create({
     baseURL:    BASEURL,

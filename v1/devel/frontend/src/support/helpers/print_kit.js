@@ -16,6 +16,9 @@
  *  2022-08-16  Todd Valentic
  *              Use &nbsp (\u00A0)
  *
+ *  2024-08-05  Todd Valentic
+ *              Remove unused width parameter in as_hex
+ *
 \********************************************************************/
 
 import moment from 'moment-timezone'
@@ -40,7 +43,7 @@ const capitalize = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const as_hex = (value,width) => {
+const as_hex = (value) => {
     if (not_set(value))
         return '--'
 

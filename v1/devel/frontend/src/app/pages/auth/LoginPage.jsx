@@ -1,7 +1,6 @@
-import React from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from '@mantine/form'
-import { useAuth } from 'app' 
+import { useAuth } from '~/app' 
 import {
     LoadingOverlay,
     TextInput,
