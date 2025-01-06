@@ -1,0 +1,8 @@
+[Unit]
+Description="Tincan network heartbeat checkin"
+Requires=tincan-heartbeat.timer
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/tincanctl -i machine-id cron
+User=root

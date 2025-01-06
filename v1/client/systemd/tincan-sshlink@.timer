@@ -1,0 +1,10 @@
+[Unit]
+Description="Timer for tincan-sshlink (%I)"
+
+[Timer]
+Unit=tincan-sshlink@%i.service
+OnBootSec=1min
+OnUnitActiveSec=1min
+
+[Install]
+WantedBy=timers.target

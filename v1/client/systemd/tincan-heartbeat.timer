@@ -1,0 +1,10 @@
+[Unit]
+Description="Timer for tincan-heartbeat"
+
+[Timer]
+Unit=tincan-heartbeat.service
+OnBootSec=1min
+OnUnitActiveSec=1min
+
+[Install]
+WantedBy=timers.target

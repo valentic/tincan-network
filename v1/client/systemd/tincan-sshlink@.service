@@ -1,0 +1,8 @@
+[Unit]
+Description="Tincan network SSH tunnel (%I)"
+Requires=tincan-sshlink@%i.timer
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/sshlink2.tincan -p %i start 
+User=root
