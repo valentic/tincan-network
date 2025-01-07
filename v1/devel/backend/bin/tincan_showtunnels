@@ -12,6 +12,9 @@
 #
 #   2023-02-03  Todd Valentic
 #               Include branch and prod in database name
+#   
+#   2025-01-07  Todd Valentic
+#               Only show values that are in the database results 
 #
 #########################################################################@
 
@@ -68,9 +71,11 @@ netstat -l -A ip --numeric-ports -e |
     awk '{ print $4,$7 }'      |
     sort -g |
 while read tunnel; do
-   printf '%-5s %-15s ' $tunnel
-   printf '%-15s ' "${groupmap[$tunnel]}" 
-   printf '%s\n' "${portmap[$tunnel]}"
+    if [[ ${groupmap[$tunnel]} ]]; then
+        printf '%-5s %-15s ' $tunnel
+        printf '%-15s ' "${groupmap[$tunnel]}" 
+        printf '%s\n' "${portmap[$tunnel]}"
+    fi
 done
 
 echo
