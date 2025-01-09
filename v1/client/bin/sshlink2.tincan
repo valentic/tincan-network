@@ -60,6 +60,9 @@
 #   2021-07-26  Todd Valentic
 #               Handle pid look up when not registered yet.
 #
+#   2025-01-07  Todd Valentic
+#               Add foreground mode for running from systemd service        
+#
 ##########################################################################
 
 ##########################################################################
@@ -68,6 +71,7 @@
 BASEDIR=/etc/tincan
 PROFILE=primary
 VERBOSE=0
+FOREGROUND=0
 
 usage() {
     echo "
@@ -83,6 +87,7 @@ usage() {
     Options:
        -h         - Show help
        -v         - Verbose output
+       -f         - Foreground
        -p PROFILE - Profile (see below)
    
     Profiles:
@@ -93,7 +98,7 @@ usage() {
     exit 2
 }
 
-PARSED_ARGS=$(getopt -n sshlink2 -o hvp: -l help,verbose,profile: -- "$@")
+PARSED_ARGS=$(getopt -n sshlink2 -o hvfp: -l help,verbose,foreground,profile: -- "$@")
 VALID_ARGS=$?
 
 if [ "$VALID_ARGS" != "0" ]; then 
@@ -107,6 +112,7 @@ do
     case "$1" in 
         -h | --help)    usage                       ;;  
         -v | --verbose) VERBOSE=1       ; shift     ;;
+        -f | --foreground) FOREGROUND=1 ; shift     ;;
         -p | --profile) PROFILE="$2"    ; shift 2   ;;
         # end of argument processing
         --) shift; break; ;;
@@ -132,7 +138,7 @@ CONF_JSON=$DATADIR/config.json
 # Default values from default.conf and $PROFILE.conf 
 
 INND_PORT=
-CUTRATE=
+CUTRATE=0
 EXTRA_OPTS=
 LOGGER_OPTS=
 SSHKEY=$KEYDIR/ssh.key
@@ -185,6 +191,23 @@ fi
 
 LOGGER="logger $LOGGER_OPTS -t sshlink-$PROFILE"
 
+SSHOPTS=$(cat << EOF
+    $MESH_SSH_USER@$MESH_SSH_HOST 
+    -C -N 
+    -o TCPKeepAlive=no 
+    -o ServerAliveInterval=$SSH_SERVERALIVEINTERVAL 
+    -o ServerAliveCountMax=$SSH_SERVERALIVECOUNT 
+    -o StrictHostKeyChecking=no 
+    -o ConnectTimeout=$SSH_CONNECTTIMEOUT 
+    -o ExitOnForwardFailure=yes 
+    -p $MESH_SSH_HOST_PORT 
+    -i $SSHKEY 
+    -R $CALLBACK_PORT:127.0.0.1:22  
+    ${INND_OPT}  
+    ${EXTRA_OPTS}
+EOF
+)
+
 ##########################################################################
 # Log if verbose
 
@@ -211,7 +234,9 @@ find_ssh_pid() {
         return
     fi
 
-    local pid=`ps -o pid,args -C ssh --no-headers | grep "ssh $MESH_SSH_USER@$MESH_SSH_HOST" | grep $CALLBACK_PORT | cut -f 1 -d s`
+    local pattern="ssh.*$MESH_SSH_USER@$MESH_SSH_HOST.*$CALLBACK_PORT"
+    local pid=`ps -o pid,args -C ssh --no-headers | grep -E $pattern | cut -f 1 -d s`
+
     echo $pid 
 }
 
@@ -233,7 +258,7 @@ check_link() {
     fi
 
     if [ -n "$LINKPID" ] ; then
-        if [ -n "$CUTRATE" ] && [ $((CURMINUTE % CUTRATE)) -eq 0 ]; then
+	    if [ -n "$CUTRATE" ] && [ $((CURMINUTE % CUTRATE)) -eq 0 ]; then
             log "Cut time reached. Dropping link"
             kill $LINKPID
         else 
@@ -263,22 +288,9 @@ drop_link() {
 ##########################################################################
 # Start link
 
-start_link() {
+start_link_background() {
 
-    ssh $MESH_SSH_USER@$MESH_SSH_HOST \
-        -n -f -C -N \
-        -o TCPKeepAlive=no \
-        -o ServerAliveInterval=$SSH_SERVERALIVEINTERVAL \
-        -o ServerAliveCountMax=$SSH_SERVERALIVECOUNT \
-        -o StrictHostKeyChecking=no \
-        -o ConnectTimeout=$SSH_CONNECTTIMEOUT \
-        -o ExitOnForwardFailure=yes \
-        -p $MESH_SSH_HOST_PORT \
-        -i $SSHKEY \
-        -R $CALLBACK_PORT:127.0.0.1:22  \
-        ${INND_OPT}  \
-        ${EXTRA_OPTS}  \
-        2>&1 /dev/null
+    ssh -n -f $SSHOPTS 2>&1 /dev/null
 
     if [ "$?" -eq 0 ] ; then
         log "Success starting link" 
@@ -288,6 +300,10 @@ start_link() {
         exit 1
     fi
 
+}
+
+start_link_foreground() {
+    exec timeout $CUTRATE ssh $SSHOPTS 
 }
 
 show_status() {
@@ -304,8 +320,12 @@ show_status() {
 case "$COMMAND" in 
 
     start)
-        check_link
-        start_link
+    	if [ "$FOREGROUND" == "1" ] ; then
+	    start_link_foreground
+	else
+            check_link
+            start_link_background
+	fi
         ;;
 
     stop)

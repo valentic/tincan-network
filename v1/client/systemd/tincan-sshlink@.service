@@ -1,8 +1,13 @@
 [Unit]
-Description="Tincan network SSH tunnel (%I)"
-Requires=tincan-sshlink@%i.timer
+Description="Tincan networkk SSH tunnel (%I)"
+Wants=network-online.target
+After=network-online.target
 
 [Service]
-Type=forking
-ExecStart=/usr/local/bin/sshlink2.tincan -p %i start 
-User=root
+Type=simple
+ExecStart=/usr/local/bin/sshlink2.tincan -p %i -f start
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
