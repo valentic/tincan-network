@@ -15,6 +15,7 @@
 #   
 #   2025-01-07  Todd Valentic
 #               Only show values that are in the database results 
+#               Check if no active systems found
 #
 #########################################################################@
 
@@ -31,12 +32,17 @@ select to_json(data) from (
     join 
         mesh_group as g on n.group_id=g.id 
     where 
-        n.active=true
+        n.active=false
 ) as data
 '
 database=tincan.v1-prod
 
 sql_output=$(psql -t -d $database -c "$sql")
+
+if [ -z "$sql_output" ]; then
+    echo "No active systems"
+    exit 0
+fi
 
 declare -A portmap
 declare -A groupmap
