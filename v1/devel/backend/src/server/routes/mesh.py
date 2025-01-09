@@ -259,7 +259,8 @@ def del_node(uuid):
 @click.option('-g','--group_name',help='Set group')
 @click.option('-x','--longitude',type=float)
 @click.option('-y','--latitude',type=float)
-def mode_node(uuid,active,pending,update,name,group_name,longitude,latitude):
+@click.option('-r','--replace_uuid',help='Replace UUID')
+def mode_node(uuid,active,pending,update,name,group_name,longitude,latitude,replace_uuid):
 
     node = cli_lookup_node(uuid)
 
@@ -301,6 +302,24 @@ def mode_node(uuid,active,pending,update,name,group_name,longitude,latitude):
             click.echo(f'Group {group_name} does not exist')
             return
         node.group_id = group.id
+
+    if replace_uuid is not None:
+ 
+        click.echo(f' - replaced UUID with {replace_uuid}')
+
+        # Check if the new UUID exists, if so delete that entry since 
+        # we are going to use the UUID for this node instead. This
+        # happens when an existing system has a new OS flashed. The 
+        # UUID changes and will register as a pending system on the
+        # server. 
+
+        other_node = cli_lookup_node(replace_uuid)
+
+        if other_node:
+            db.session.delete(other_node)
+            db.session.commit()
+
+        node.uuid = replace_uuid
 
     db.session.commit()
 
