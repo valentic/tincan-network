@@ -4,5 +4,5 @@ Requires=tincan-heartbeat.timer
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/tincanctl -i machine-id cron
+ExecStart=/usr/local/bin/tincanctl -i macaddr cron
 User=root
