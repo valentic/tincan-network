@@ -32,7 +32,7 @@ select to_json(data) from (
     join 
         mesh_group as g on n.group_id=g.id 
     where 
-        n.active=false
+        n.active=true
 ) as data
 '
 database=tincan.v1-prod
