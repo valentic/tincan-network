@@ -1,5 +1,5 @@
 [Unit]
-Description="Tincan network heartbeat checkin"
+Description=Tincan network heartbeat checkin
 Requires=tincan-heartbeat.timer
 
 [Service]

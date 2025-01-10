@@ -1,5 +1,5 @@
 [Unit]
-Description="Tincan networkk SSH tunnel (%I)"
+Description=Tincan networkk SSH tunnel (%I)
 Wants=network-online.target
 After=network-online.target
 

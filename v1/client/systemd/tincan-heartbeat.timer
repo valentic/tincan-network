@@ -1,5 +1,5 @@
 [Unit]
-Description="Timer for tincan-heartbeat"
+Description=Tincan heartbeat timer
 
 [Timer]
 Unit=tincan-heartbeat.service
