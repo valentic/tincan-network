@@ -130,7 +130,7 @@ KEYDIR=$BASEDIR/keys
 
 CONF_DEFAULTS=$CONFDIR/defaults.conf
 CONF_PROFILE=$CONFDIR/$PROFILE.conf
-CONF_JSON=$DATADIR/config.json
+=$DATADIR/config.json
 
 [ -f $CONF_JSON ] || exit 3
 
@@ -320,7 +320,9 @@ show_status() {
 case "$COMMAND" in 
 
     start)
-    	if [ "$FOREGROUND" == "1" ] ; then
+	if [ "$MESH_PENDING" == "true" ] ; then
+	    log "Pending at server"
+	else if	[ "$FOREGROUND" == "1" ] ; then
 	    start_link_foreground
 	else
             check_link
