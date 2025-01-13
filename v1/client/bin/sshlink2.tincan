@@ -130,7 +130,7 @@ KEYDIR=$BASEDIR/keys
 
 CONF_DEFAULTS=$CONFDIR/defaults.conf
 CONF_PROFILE=$CONFDIR/$PROFILE.conf
-=$DATADIR/config.json
+CONF_JSON=$DATADIR/config.json
 
 [ -f $CONF_JSON ] || exit 3
 
@@ -325,8 +325,8 @@ case "$COMMAND" in
 	else if	[ "$FOREGROUND" == "1" ] ; then
 	    start_link_foreground
 	else
-            check_link
-            start_link_background
+        check_link
+        start_link_background
 	fi
         ;;
 
