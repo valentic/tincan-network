@@ -62,6 +62,9 @@
 #
 #   2025-01-07  Todd Valentic
 #               Add foreground mode for running from systemd service        
+#               
+#   2025-01-12  Todd Valentic
+#               Better handle pending case
 #
 ##########################################################################
 
@@ -320,14 +323,14 @@ show_status() {
 case "$COMMAND" in 
 
     start)
-	if [ "$MESH_PENDING" == "true" ] ; then
-	    log "Pending at server"
-	else if	[ "$FOREGROUND" == "1" ] ; then
-	    start_link_foreground
-	else
-        check_link
-        start_link_background
-	fi
+	    if [ "$MESH_PENDING" == "true" ] ; then
+	        log "Pending at server"
+	    elif	[ "$FOREGROUND" == "1" ] ; then
+	        start_link_foreground
+	    else
+            check_link
+            start_link_background
+	    fi
         ;;
 
     stop)
