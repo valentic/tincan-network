@@ -260,7 +260,8 @@ def del_node(uuid):
 @click.option('-x','--longitude',type=float)
 @click.option('-y','--latitude',type=float)
 @click.option('-r','--replace_uuid',help='Replace UUID')
-def mode_node(uuid,active,pending,update,name,group_name,longitude,latitude,replace_uuid):
+@click.option('-t','--tunnel',type=click.Choice(["none", "client", "server"]), help='Tunnel type', default=None)
+def mode_node(uuid,active,pending,update,name,group_name,longitude,latitude,replace_uuid,tunnel_name):
 
     node = cli_lookup_node(uuid)
 
@@ -302,6 +303,14 @@ def mode_node(uuid,active,pending,update,name,group_name,longitude,latitude,repl
             click.echo(f'Group {group_name} does not exist')
             return
         node.group_id = group.id
+
+    if tunnel_name is not None:
+        click.echo(f'  - changed tunnel type to {tunnel_name}')
+        tunnel = cli_lookup_tunnel(tunnel_name)
+        if not tunnel:
+            click.echo(f'Tunnel {tunnel_name} does not exist')
+            return
+        node.tunnel_id = tunnel.id
 
     if replace_uuid is not None:
  
@@ -376,6 +385,9 @@ def lookup_group(name):
 
 def lookup_group_id(id):
     return model.MeshGroup.query.filter_by(id=id).first_or_404()
+
+def lookup_tunnel(name):
+    return model.MeshTunnel.query.filter_by(name=name).first_or_404()
 
 def lookup_node(uuid):
     return model.MeshNode.query.filter_by(uuid=uuid).first_or_404()

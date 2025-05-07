@@ -97,12 +97,22 @@ class MeshGroup(db.Model, Serializer):
 
 PortSeq = db.Sequence('port_seq', start=2200)
 
+class MeshTunnel(db.Model, Serializer):
+    """Mesh tunnel"""
+    __tablename__ = 'mesh_tunnel'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, unique=True)
+    description = db.Column(db.String)
+
+
 class MeshNode(db.Model, Serializer):
     """Mesh node"""
     __tablename__ = 'mesh_node'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     group_id = db.Column(db.Integer, db.ForeignKey('mesh_group.id'))
+    tunnel_id = db.Column(db.Integer, db.ForeignKey('mesh_tunnel.id'))
     uuid = db.Column(db.String, unique=True) 
     name = db.Column(db.String,default='')
     label = db.Column(db.String,default='')
@@ -133,6 +143,8 @@ class MeshNode(db.Model, Serializer):
 
     checked_on = db.Column(db.DateTime(timezone=True),
                     nullable=False, default=datetime.datetime.utcnow)
+
+    tunnel = db.relationship('MeshTunnel', backref='nodes')
 
 #-------------------------------------------------------------------------
 # User management tables

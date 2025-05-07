@@ -330,9 +330,11 @@ def seed():
 
     model = current_app.model
 
-    model.update_or_add(dict(id=1,name='member',description="Read only access"), model.Role)
-    model.update_or_add(dict(id=2,name='manager',description="Update data"), model.Role)
-    model.update_or_add(dict(id=3,name='admin',description="Add/change/delete users"), model.Role)
+    # Example - note this could also be done automatically in the alembic migration scripts. 
+
+    # model.update_or_add(dict(id=1,name='member',description="Read only access"), model.Role)
+    # model.update_or_add(dict(id=2,name='manager',description="Update data"), model.Role)
+    # model.update_or_add(dict(id=3,name='admin',description="Add/change/delete users"), model.Role)
 
     db.session.commit()
 
