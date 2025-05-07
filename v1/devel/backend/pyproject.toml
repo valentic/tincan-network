@@ -8,14 +8,13 @@ dynamic = ["version"]
 description = "Tincan Network Management System"
 readme = "README"
 requires-python = ">=3.12"
-license = { file = "LICENSE" }
+license = "GPL-3.0-or-later" 
 authors = [
     { name = "Todd Valentic", email="todd.valentic@gmail.com" }
 ]
 
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU Public License v3 (GPLv3)",
     "Operating System :: OS Independent"
 ]
 

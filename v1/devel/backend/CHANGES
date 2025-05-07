@@ -3,3 +3,6 @@
 
 2024-12-30  Todd Valentic
             Updates for uv
+
+2025-05-07  Todd Valentic
+            Update pyproject.toml license specification to use SPDX expression 
