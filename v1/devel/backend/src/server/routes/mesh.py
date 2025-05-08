@@ -44,6 +44,9 @@ def cli_lookup_group_id(id):
 def cli_lookup_node(uuid):
     return model.MeshNode.query.filter_by(uuid=uuid).first()
 
+def cli_lookup_tunnel(name):
+    return model.MeshTunnel.query.filter_by(name=name).first_or_404()
+
 def normalize_name(name):
     name = name.lower()
 
@@ -260,8 +263,8 @@ def del_node(uuid):
 @click.option('-x','--longitude',type=float)
 @click.option('-y','--latitude',type=float)
 @click.option('-r','--replace_uuid',help='Replace UUID')
-@click.option('-t','--tunnel',type=click.Choice(["none", "client", "server"]), help='Tunnel type', default=None)
-def mode_node(uuid,active,pending,update,name,group_name,longitude,latitude,replace_uuid,tunnel_name):
+@click.option('-t','--tunnel','tunnel_name',type=click.Choice(["none", "client", "server"]), help='Tunnel type', default=None)
+def mod_node(uuid,active,pending,update,name,group_name,longitude,latitude,replace_uuid,tunnel_name):
 
     node = cli_lookup_node(uuid)
 
@@ -348,6 +351,7 @@ def show_node(uuid):
     click.echo(f'Group:       {group.name}')
     click.echo(f'UUID:        {uuid}')
     click.echo(f'Name:        {node.name}')
+    click.echo(f'Tunnel:      {node.tunnel.description}')
     click.echo(f'SSH port:    {node.ssh_port}')
     click.echo(f'SSH alt:     {node.ssh_port_alt}')
     click.echo(f'Latitude:    {node.latitude}')
@@ -666,6 +670,54 @@ class Group(Resource):
 
         return self.get(group_name)
 
+#-- Tunnel Type Info --------------------------------------------
+
+tunnel_parser = reqparse.RequestParser()
+tunnel_parser.add_argument('name',type=str,required=True)
+
+class TunnelList(Resource):
+
+    def get(self): 
+        tunnels = model.MeshTunnel.query.all()
+        return model.MeshTunnel.serialize_list(tunnels)
+
+    def post(self):
+        args = tunnel_parser.parse_args()
+        name = args['name']
+
+        abort_if_tunnel_exists(name)
+    
+        tunnel = model.MeshTunnel(**args)
+        model.db.session.add(tunnel)
+        model.db.session.commit()
+
+        return tunnel.id, 201
+
+class Tunnel(Resource):
+
+    def get(self, tunnel_name):
+        tunnel = lookup_tunnel(tunnel_name)
+        return tunnel.serialize()
+
+    def delete(self, tunnel_name):
+        tunnel = lookup_tunnel(tunnel_name)
+        model.db.session.delete(tunnel)
+        model.db.session.commit()
+
+        return '', 204
+       
+    def put(self, tunnel_name):
+        args = tunnel_parser.parse_args()
+        tunnel = lookup_tunnel(tunnel_name)
+        model.update(tunnel, args)
+
+        try:
+            model.db.session.commit()
+        except:
+            abort(404, message=f'Failed to update tunnel {tunnel_name}')
+
+        return self.get(tunnel_name)
+
 #-- Node Info -------------------------------------------------
 
 class NodeList(Resource):
@@ -674,6 +726,14 @@ class NodeList(Resource):
     #parser.add_argument('uuid',type=str,required=True)
     #parser.add_argument('sshkey',type=str,required=True)
     #parser.add_argument('group',type=str,required=True)
+
+    # Filter out some entries
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        del d["sshkey"]
+        del d["tunnel"]
+        return d
 
     # List nodes
 
@@ -797,7 +857,8 @@ class NodeCheckin(Resource):
                 'ssh_port_alt':     node.ssh_port_alt,
                 'ssh_host':         group.ssh_host,
                 'ssh_host_port':    group.ssh_port,
-                'ssh_user':         group.ssh_user
+                'ssh_user':         group.ssh_user,
+                'tunnel':           node.tunnel.name
             })
 
             if node.sshkey: 
@@ -874,6 +935,8 @@ class NodeDisable(Resource):
 
 api.add_resource(GroupList,         '/groups')
 api.add_resource(Group,             '/groups/<group_name>')
+api.add_resource(TunnelList,        '/tunnels')
+api.add_resource(Tunnel,            '/tunnels/<tunnel_name>')
 api.add_resource(NodeList,          '/nodes')
 api.add_resource(Node,              '/nodes/<uuid>')
 api.add_resource(NodeCheckin,       '/nodes/<uuid>/checkin')
