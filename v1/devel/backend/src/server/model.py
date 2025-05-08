@@ -105,6 +105,10 @@ class MeshTunnel(db.Model, Serializer):
     name = db.Column(db.String, unique=True)
     description = db.Column(db.String)
 
+    def serialize(self):
+        d = Serializer.serialize(self)
+        del d["nodes"]
+        return d
 
 class MeshNode(db.Model, Serializer):
     """Mesh node"""
@@ -145,6 +149,12 @@ class MeshNode(db.Model, Serializer):
                     nullable=False, default=datetime.datetime.utcnow)
 
     tunnel = db.relationship('MeshTunnel', backref='nodes')
+
+    def serialize(self):
+        d = Serializer.serialize(self)
+        del d["sshkey"]
+        del d["tunnel"]
+        return d
 
 #-------------------------------------------------------------------------
 # User management tables

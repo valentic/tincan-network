@@ -727,14 +727,6 @@ class NodeList(Resource):
     #parser.add_argument('sshkey',type=str,required=True)
     #parser.add_argument('group',type=str,required=True)
 
-    # Filter out some entries
-
-    def serialize(self):
-        d = Serializer.serialize(self)
-        del d["sshkey"]
-        del d["tunnel"]
-        return d
-
     # List nodes
 
     def get(self): 
